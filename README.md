@@ -2,7 +2,7 @@
 
 This repository is a companion page for the following submitted publication:
 
-> Laura Carnevali, Marco Paolieri, Riccardo Reali, Leonardo Scommegna, and Enrico Vicario. 2025. Compositional Coordinated Resource Provisioning in Workflows with Stochastic Durations. (Currently under review).
+> Laura Carnevali, Reinhard German, Leonardo Montecchi, Leonardo Scommegna, and Enrico Vicario. 2025. CThe Pyramis Library: Efficient Numerical Evaluation of Hierarchical UML Statecharts applied to Stochastic Workflows. (Currently under review).
 
 This replication package includes all resources needed to reproduce our experimental results.
 
@@ -32,7 +32,7 @@ Execute from the root directory:
 ```
 mvn exec:java -Dexec.mainClass="it.unifi.hierarchical.epew25.GTGenerator"
 ```
-This command will generate the Ground Truth in the "POSTP_GT" folder.
+This command will generate the Ground Truth (GT) in the "POSTP_GT" folder.
 
 **Important Notes**:
 - To skip processing time, use the pre-computed GT files in `GT`
@@ -50,7 +50,7 @@ This command will perform the analysis with Pyramis for each configuration.
 Default values for `gt.path` and `gt.runs` are set in order to work with the pre-calculated GT files.
 If you want to perform the analysis with the files in the GT directory, both parameters can be omitted.
 
-If you want to perform the analysis with a different Ground Truth, please specify the path to the folder where the files are located (the `[GT_PATH]` parameter) and how many runs were used to obtain them (the `[GT_SIMULATION_RUNS]` parameter). By default, the generation script outlined in the previous step uses 1,000,000 simulation runs.
+If you want to perform the analysis with a different GT, please specify the path to the folder where the files are located (the `[GT_PATH]` parameter) and how many runs were used to obtain them (the `[GT_SIMULATION_RUNS]` parameter). By default, the generation script outlined in the previous step uses 1,000,000 simulation runs.
 
 ### Pyramis Time Experiments
 
