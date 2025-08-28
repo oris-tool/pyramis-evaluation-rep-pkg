@@ -1,36 +1,20 @@
 package it.unifi.hierarchical.epew25;
 
-import it.unifi.hierarchical.analysis.HierarchicalSMPAnalysis;
-import it.unifi.hierarchical.analysis.NumericalValues;
-import it.unifi.hierarchical.model.*;
-import org.apache.commons.collections.map.HashedMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.oristool.eulero.evaluation.approximator.TruncatedExponentialMixtureApproximation;
-import org.oristool.eulero.evaluation.heuristics.AnalysisHeuristicsVisitor;
-import org.oristool.eulero.evaluation.heuristics.RBFHeuristicsVisitor;
 import org.oristool.eulero.modeling.Activity;
 import org.oristool.models.stpn.RewardRate;
 import org.oristool.models.stpn.TransientSolution;
 import org.oristool.models.stpn.trees.DeterministicEnablingState;
 
-import com.google.common.io.Files;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static it.unifi.hierarchical.epew25.Utils.getPartitionedFunction;
 
 public class GTGenerator {
 
-    private static final String RESULT_PATH = System.getProperty("user.dir") + "/results";
     private static String APPROXIMATION_PATH = System.getProperty("user.dir") + "/approximations/approximations.json";
 
 
@@ -38,7 +22,6 @@ public class GTGenerator {
     private static final double GT_TIME_STEP = 0.1;
     private static final double GT_TIME_LIMIT = 25.;
     private static final int GT_SIMULATION_RUNS = 1000000;
-
 
 
     private static final int[] PARALLEL_COMBINATIONS = { 4, 8 };

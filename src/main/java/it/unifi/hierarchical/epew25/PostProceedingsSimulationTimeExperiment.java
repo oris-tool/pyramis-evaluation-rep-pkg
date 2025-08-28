@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class PostProceedingsSimulationTimeExperiment {
 
@@ -27,9 +30,35 @@ public class PostProceedingsSimulationTimeExperiment {
     private static final double TIME_LIMIT = 25.;
     private static final int SIMULATION_RUNS = 50;
 
-    private static final String GT_BASE_PATH = System.getProperty("user.dir") + "/POSTP_GT/";
+    // private static final String GT_BASE_PATH = System.getProperty("user.dir") + "/POSTP_GT/";
     private static final double GT_TIME_STEP = 0.1;
-    private static final int GT_SIMULATION_RUNS = 1000000;
+    // private static final int GT_SIMULATION_RUNS = 1000000;
+
+    private static String GT_BASE_PATH;
+    private static int GT_SIMULATION_RUNS;
+    static {
+        GT_BASE_PATH = System.getProperty("user.dir") + "/GT/";
+
+        String gtArg = System.getProperty("gt.path");
+
+        if (gtArg != null) {
+            GT_BASE_PATH = Paths.get(gtArg).toString() + "/";
+        }
+        System.out.println("GT path: " + GT_BASE_PATH);
+
+        GT_SIMULATION_RUNS = 1000000;
+        String runsArg = System.getProperty("gt.runs");
+
+        if (runsArg != null) {
+            try {
+                GT_SIMULATION_RUNS = Integer.parseInt(runsArg);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid value for gt.runs: " + runsArg + ". Default used: " + GT_SIMULATION_RUNS);
+            }
+        }
+
+        System.out.println("Using a GT obtained from a " + GT_SIMULATION_RUNS + " simulation runs");
+    }
 
 
     // UTIL EXC

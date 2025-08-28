@@ -7,40 +7,28 @@ import org.apache.commons.collections.map.HashedMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.oristool.eulero.evaluation.approximator.TruncatedExponentialMixtureApproximation;
-import org.oristool.eulero.evaluation.heuristics.AnalysisHeuristicsVisitor;
-import org.oristool.eulero.evaluation.heuristics.RBFHeuristicsVisitor;
-import org.oristool.eulero.modeling.Activity;
-import org.oristool.models.stpn.RewardRate;
-import org.oristool.models.stpn.TransientSolution;
-import org.oristool.models.stpn.trees.DeterministicEnablingState;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static it.unifi.hierarchical.epew25.Utils.getPartitionedFunction;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PostProceedingsEpewExperiment {
 
     private static final String RESULT_PATH = System.getProperty("user.dir") + "/results";
     private static String APPROXIMATION_PATH = System.getProperty("user.dir") + "/approximations/approximations.json";
 
-    private static final int repetitions = 1;
     private static final double TIME_STEP = 0.1;
     private static final double TIME_LIMIT = 25.;
     private static final int SIMULATION_RUNS = 20;
 
-    private static final String GT_BASE_PATH = System.getProperty("user.dir") + "/POSTP_GT/";
     private static final double GT_TIME_STEP = 0.1;
     private static final double GT_TIME_LIMIT = 25.;
-    private static final int GT_SIMULATION_RUNS = 1000000;
 
     private static final List<Double> TIMESTEPS_COMPARED = List.of(0.4, 0.2, 0.1);
-
 
     private static final int[] PARALLEL_COMBINATIONS = { 4, 8 };
     private static final int[] SEQUENCE_COMBINATIONS = { 4, 8 };
@@ -53,6 +41,32 @@ public class PostProceedingsEpewExperiment {
         }
     }
 
+    private static String GT_BASE_PATH;
+    private static int GT_SIMULATION_RUNS;
+    static {
+        GT_BASE_PATH = System.getProperty("user.dir") + "/GT/";
+
+        String gtArg = System.getProperty("gt.path");
+
+        if (gtArg != null) {
+            GT_BASE_PATH = Paths.get(gtArg).toString() + "/";
+        }
+        System.out.println("GT path: " + GT_BASE_PATH);
+
+        GT_SIMULATION_RUNS = 1000000;
+        String runsArg = System.getProperty("gt.runs");
+
+        if (runsArg != null) {
+            try {
+                GT_SIMULATION_RUNS = Integer.parseInt(runsArg);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid value for gt.runs: " + runsArg + ". Default used: " + GT_SIMULATION_RUNS);
+            }
+        }
+
+        System.out.println("Using a GT obtained from a " + GT_SIMULATION_RUNS + " simulation runs");
+    }
+
     public static void main(String[] args) throws InvalidTimeStepException {
 
         String resultDirectory = generateResultDirectory();
@@ -62,11 +76,8 @@ public class PostProceedingsEpewExperiment {
 
         double timeStep = TIME_STEP;
         double timeLimit = TIME_LIMIT;
-        int simulationRuns = SIMULATION_RUNS;
 
         double gtTimeStep = GT_TIME_STEP;
-        double gtTimeLimit = GT_TIME_LIMIT;
-        int gtSimulationRuns = GT_SIMULATION_RUNS;
 
         PyramisModelBuilder builder;
         builder = new PyramisModelBuilder();
@@ -78,10 +89,11 @@ public class PostProceedingsEpewExperiment {
 
         System.out.println("Baseline Combination Config");
         String baselineGtPath = GT_BASE_PATH + GT_SIMULATION_RUNS + "GT_PAR2_SEQ2_ALT2.txt";
-        double[] baselineGtCDF = retrieveGT(baselineGtPath, timeStep); 
+        double[] baselineGtCDF = retrieveGT(baselineGtPath, timeStep);
 
-        executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit, baselineGtCDF, gtTimeStep, resultDirectory);
-        
+        executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit,
+                baselineGtCDF, gtTimeStep, resultDirectory);
+
         System.out.println("Parallel Combination Experiments");
         for (int parallelConfig : PARALLEL_COMBINATIONS) {
             builder = new PyramisModelBuilder();
@@ -96,7 +108,8 @@ public class PostProceedingsEpewExperiment {
             String gtPath = GT_BASE_PATH + GT_SIMULATION_RUNS + "GT_PAR" + parallelConfig + "_SEQ2_ALT2.txt";
             double[] gtCDF = retrieveGT(gtPath, timeStep); // WARNING we assume the same distribution map!
 
-            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit, gtCDF, gtTimeStep, resultDirectory);
+            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit,
+                    gtCDF, gtTimeStep, resultDirectory);
 
         }
 
@@ -114,7 +127,8 @@ public class PostProceedingsEpewExperiment {
             String gtPath = GT_BASE_PATH + GT_SIMULATION_RUNS + "GT_PAR2_SEQ" + sequenceConfing + "_ALT2.txt";
             double[] gtCDF = retrieveGT(gtPath, timeStep); // WARNING we assume the same distribution map!
 
-            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit, gtCDF, gtTimeStep, resultDirectory);
+            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit,
+                    gtCDF, gtTimeStep, resultDirectory);
 
         }
 
@@ -132,11 +146,11 @@ public class PostProceedingsEpewExperiment {
             String gtPath = GT_BASE_PATH + GT_SIMULATION_RUNS + "GT_PAR2_SEQ2_ALT" + alternativeConfig + ".txt";
             double[] gtCDF = retrieveGT(gtPath, timeStep); // WARNING we assume the same distribution map!
 
-            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit, gtCDF, gtTimeStep, resultDirectory);
+            executePostProceedingsComparisonGTPyramis(builder, distributionMapping, TIMESTEPS_COMPARED, timeLimit,
+                    gtCDF, gtTimeStep, resultDirectory);
         }
 
     }
-
 
     public static double[] retrieveGT(String filename, double timeStepCheck) throws InvalidTimeStepException {
         ArrayList<Double> firstCol = new ArrayList<>();
@@ -175,8 +189,6 @@ public class PostProceedingsEpewExperiment {
         }
     }
 
-
-
     public static void executePostProceedingsComparisonGTPyramis(PyramisModelBuilder builder,
             Map<String, DistributionParams> distributionMapping,
             List<Double> timeSteps, double timeLimit, double[] gtCdf, double gtTimestep, String resultDirectory) {
@@ -198,7 +210,7 @@ public class PostProceedingsEpewExperiment {
         for (double timeStep : timeStepAnalysisResults.keySet()) {
             double[] pyramisCDF = timeStepAnalysisResults.get(timeStep);
             double[] gtSubsample = Utils.subsample(gtCdf, gtTimestep, 0.4);
-            double[] pyramisSubsample = Utils.subsample(pyramisCDF, timeStep, 0.4); 
+            double[] pyramisSubsample = Utils.subsample(pyramisCDF, timeStep, 0.4);
             double jsDistance = Utils.jsDistance(gtSubsample, pyramisSubsample);
             jsDistances.put(timeStep, jsDistance);
             saveArrayToFile(pyramisCDF, timeStep,
@@ -206,8 +218,6 @@ public class PostProceedingsEpewExperiment {
         }
         saveJSResults(jsDistances, resultDirectory, expName);
     }
-
-
 
     public static double[] pyramisPostProceedingsExperiment(PyramisModelBuilder builder,
             Map<String, DistributionParams> distributionMapping, double timeStep,
@@ -218,8 +228,6 @@ public class PostProceedingsEpewExperiment {
         NumericalValues cdf = analysis.cdf;
         return cdf.getValues();
     }
-
-
 
     public static List<DistributionParams> getDistributionParametersList(String approximationsPath) {
         List<DistributionParams> distributions = new ArrayList<>();
@@ -235,7 +243,6 @@ public class PostProceedingsEpewExperiment {
         }
         return distributions;
     }
-
 
     public static Map<String, DistributionParams> generateSipthDistributionMapping(
             List<DistributionParams> paramsList) {
@@ -440,6 +447,5 @@ public class PostProceedingsEpewExperiment {
             printDistributions(nextlogicalLocation);
         }
     }
-
 
 }
