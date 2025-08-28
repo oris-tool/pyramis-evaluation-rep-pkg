@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>it.unifi</groupId>
+	<artifactId>epew25rplpkg</artifactId>
+	<version>1.0.0</version>
+
+	<repositories>
+		<repository>
+			<id>oss-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>it.unifi</groupId>
+			<artifactId>hierarchicalsmp</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>org.oris-tool</groupId>
+			<artifactId>sirio</artifactId>
+			<version>2.0.4-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency> -->
+
+		<dependency>
+			<groupId>org.oris-tool</groupId>
+			<artifactId>eulero</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency> -->
+
+		<dependency> 
+			<groupId>org.jfree</groupId> 
+			<artifactId>jcommon</artifactId> 
+			<version>1.0.23</version> 
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+	</dependencies>
+	
+	<properties> 
+		<maven.compiler.source>23</maven.compiler.source>
+		<maven.compiler.target>23</maven.compiler.target>
+	</properties>
+
+<build>
+	<plugins> 
+		<plugin> 
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.8.1</version>
+			<configuration> 
+				<source>23</source>
+				<target>23</target>
+			</configuration> 
+		</plugin> 
+	</plugins> 
+</build>
+	
+</project>
